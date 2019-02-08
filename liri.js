@@ -2,64 +2,55 @@ require("dotenv").config();
 
 var keys = require("./keys.js");
 var Spotify = require('node-spotify-api');
-
-// concert-this
-// movie-this
-// do-what-it-says
-
-
-// Spotify API
+var axios = require("axios");
 var Spotify = require('node-spotify-api');
- 
+var moment = require('moment');
+
+//user input var 
 var userInput = process.argv;
 var userInputCase = process.argv[2];
-var song = "";
 
+//switch cases for the different functions
 switch (userInputCase) {
+
   case "spotify-this-song":
-   // Loops through a string incase the song title is more than one word
+  //Checks to see if a user inputed a value otherwise defaults to the sign
   if (userInput.length > 3){
-      for ( var i = 3; i < userInput.length; i++){
-        song = song + " " +  userInput[i];
-      }
+    var song = process.argv.slice(3).join(" ");
   } else{
-    song = "The Sign";
+    var song = "The Sign";
   }
   
   spotifySearch(song)
   break;
 
-  // case "concert-this":
-  // break;
-  // default:
+  case "concert-this":
+  var artist = process.argv.slice(3).join(" ");
+  conertSearch(artist);
+  break;
+  
+  
+  case "movie-this":
+  //Checks to see if a user inputed anything otherwise puts in Mr Nobody
+  if (userInput.length > 3){
+    var movieName = process.argv.slice(3).join(" ");
+  } else{
+    var movieName = "Mr. Nobody";
+  }
 
-  // case "movie-this":
-  // break;
+  movieSearch(movieName);
+  break;
 
   // case "do-what-it-says":
   // break;
 
-}
+  //If bad input then this is logged
+  default: console.log("Please enter a valid input");
 
-// switch (action) {
-//   case 'spotify-this-song':
-//       var songName = process.argv[3];
-//       spotify(songName);
-//       break;
-//   case 'movie-this':
-//       var movieTitle = process.argv[3];
-//       movie(movieTitle);
-//       break;
-//   case 'concert-this':
-//       var artist = process.argv[3];
-//       concert(artist);
-//       break;
+  
+} 
 
-//   default:
-//       break;
-// }
-
-
+//Function for the spotify search
 function spotifySearch(song){
 
 var spotify = new Spotify(keys.spotify);
@@ -80,3 +71,35 @@ console.log(`Album: ${songInfo.album.name}`);
 });
 }
 
+//Function for the concert search
+function conertSearch (artist){
+
+  axios.get("https://rest.bandsintown.com/artists/"+ artist + "/events?app_id=codingbootcamp")
+  .then(function(response) {
+    // If the axios was successful...
+    // Then log the body from the site!
+    console.log("Venue " + response.data[0].venue.name);
+    console.log("Location: " + response.data[0].venue.city + ", " + response.data[0].venue.region + " " + response.data[0].venue.country);
+    console.log("Date/Time: " + moment(response.data[0].datetime).format("MM/DD/YYYY"));    
+
+  })
+}
+
+//Function for the movie search
+function movieSearch(movieName) {
+
+var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
+
+axios.get(queryUrl).then(
+  function(response) {
+    console.log("Title: " + response.data.Title);
+    console.log("Release Year: " + response.data.Year);
+    console.log("IMDB Rating: " + response.data.IMDBRating);
+    console.log("Rotten Tomatoes Rating: " + response.data.Metascore);
+    console.log("Country " + response.data.Country);
+    console.log("Language " + response.data.Language);
+    console.log("Plot " + response.data.Plot);
+    console.log("Actors " + response.data.Actors);
+  }
+);
+}
