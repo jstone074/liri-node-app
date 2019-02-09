@@ -86,6 +86,7 @@ function conertSearch(artist) {
 
   axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp")
     .then(function (response) {
+      // console.log(response);
 
       console.log("Venue " + response.data[0].venue.name);
       console.log("Location: " + response.data[0].venue.city + ", " + response.data[0].venue.region + " " + response.data[0].venue.country);
