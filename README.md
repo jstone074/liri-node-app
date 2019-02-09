@@ -17,10 +17,11 @@ node.js based application to get information on movies, bands, and songs.
     ![Movie This](/images/movie-this.png)
 
 
-* Using do-what-it-says command will read a command from a file and perform the action. The below screen shot shows three different actions of a spotify-this-song, movie-this, and concert-this
+* Using do-what-it-says command will read a command from a file and perform the action. The below screen shot shows three different actions of a spotify-this-song, movie-this, and concert-this. (Note: If the file only has the command, it will default to either "The Sign" or "Mr Nobody" depending on the command entered)
 
     ![Do what it says](/images/do-what-it-says.png)
 
 * If you use input that is not accepted format an error will be thrown:
+
     ![error](/images/error.png)
 
