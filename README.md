@@ -21,7 +21,7 @@ node.js based application to get information on movies, bands, and songs.
 
     ![Do what it says](/images/do-what-it-says.png)
 
-* If you use input that is not accepted format an error will be thrown:
+* If you use input that is not an accepted format an error will be thrown:
 
     ![error](/images/error.png)
 
