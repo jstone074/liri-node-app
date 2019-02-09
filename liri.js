@@ -1,12 +1,14 @@
 require("dotenv").config();
 
+//Requirements for the node packages
 var keys = require("./keys.js");
+var fs = require("fs");
 var Spotify = require('node-spotify-api');
 var axios = require("axios");
 var Spotify = require('node-spotify-api');
 var moment = require('moment');
 
-//user input var 
+//Saving the user inputs from node into variables 
 var userInput = process.argv;
 var userInputCase = process.argv[2];
 
@@ -41,8 +43,9 @@ switch (userInputCase) {
   movieSearch(movieName);
   break;
 
-  // case "do-what-it-says":
-  // break;
+  case "do-what-it-says":
+  fileSearch();
+  break;
 
   //If bad input then this is logged
   default: console.log("Please enter a valid input");
@@ -50,7 +53,9 @@ switch (userInputCase) {
   
 } 
 
+////////////////////////////////////////////////////////////////
 //Function for the spotify search
+////////////////////////////////////////////////////////////////
 function spotifySearch(song){
 
 var spotify = new Spotify(keys.spotify);
@@ -70,14 +75,18 @@ console.log(`Song: ${songInfo.name}`);
 console.log(`Album: ${songInfo.album.name}`);
 });
 }
+////////////////////////////////////////////////////////////////
+//END FUNCTION
+////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////
 //Function for the concert search
+////////////////////////////////////////////////////////////////
 function conertSearch (artist){
 
   axios.get("https://rest.bandsintown.com/artists/"+ artist + "/events?app_id=codingbootcamp")
   .then(function(response) {
-    // If the axios was successful...
-    // Then log the body from the site!
+
     console.log("Venue " + response.data[0].venue.name);
     console.log("Location: " + response.data[0].venue.city + ", " + response.data[0].venue.region + " " + response.data[0].venue.country);
     console.log("Date/Time: " + moment(response.data[0].datetime).format("MM/DD/YYYY"));    
@@ -85,7 +94,9 @@ function conertSearch (artist){
   })
 }
 
+////////////////////////////////////////////////////////////////
 //Function for the movie search
+////////////////////////////////////////////////////////////////
 function movieSearch(movieName) {
 
 var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
@@ -102,4 +113,60 @@ axios.get(queryUrl).then(
     console.log("Actors " + response.data.Actors);
   }
 );
+}
+
+////////////////////////////////////////////////////////////////
+//Function for file search
+////////////////////////////////////////////////////////////////
+function fileSearch() {
+
+  fs.readFile("random.txt", "utf8", function(error, data) {
+
+    // If the code experiences any errors it will log the error to the console.
+    if (error) {
+      return console.log(error);
+    }
+
+    //Put the contents of the random text file into variables
+    var dataArr = data.split(",");
+    var doThisNow = dataArr[0];
+
+  
+  //Start another instance of a switch case based on what is in the Random Text File
+    switch (doThisNow) {
+
+      case "spotify-this-song":
+      
+      if (dataArr[1]){
+        var doDoThisSong = dataArr[1];
+      } else{
+        var doDoThisSong = "The Sign";
+      }
+      
+      spotifySearch(doDoThisSong)
+      break;
+    
+      case "concert-this":
+      var artist = process.argv.slice(3).join(" ");
+      conertSearch(artist);
+      break;
+      
+      
+      case "movie-this":
+      
+      if (userInput.length > 3){
+        var movieName = process.argv.slice(3).join(" ");
+      } else{
+        var movieName = "Mr. Nobody";
+      }
+    
+      movieSearch(movieName);
+      break;
+    
+      
+      default: console.log("Please enter a valid input");   
+      
+    }
+ });
+  
 }
